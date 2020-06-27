@@ -1,6 +1,11 @@
 import colors from 'vuetify/es5/util/colors'
+import es from 'vuetify/es5/locale/es'
 
 export default {
+  server: {
+    port: 8000, // default: 3000
+    host: '0.0.0.0' // default: localhost
+  },
   /*
    ** Nuxt rendering mode
    ** See https://nuxtjs.org/api/configuration-mode
@@ -83,6 +88,10 @@ export default {
           success: colors.green.accent3,
         },
       },
+    },
+    lang: {
+      locales: { es },
+      current: 'es',
     },
   },
   /*
