@@ -4,7 +4,7 @@ import es from 'vuetify/es5/locale/es'
 export default {
   server: {
     port: 8000, // default: 3000
-    host: '0.0.0.0' // default: localhost
+    host: '0.0.0.0', // default: localhost
   },
   /*
    ** Nuxt rendering mode
@@ -42,7 +42,7 @@ export default {
    ** Plugins to load before mounting the App
    ** https://nuxtjs.org/guide/plugins
    */
-  plugins: [],
+  plugins: ['@/plugins/filters.js'],
   /*
    ** Auto import components
    ** See https://nuxtjs.org/api/configuration-components

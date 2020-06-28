@@ -14,6 +14,10 @@
         v-icon mdi-dots-vertical
 
       v-toolbar-title(v-text='title')
+      v-spacer
+      v-btn(fab small @click='modeDark = !modeDark').mr-2
+        v-icon mdi-theme-light-dark
+
     v-main
       v-container(fluid)
         nuxt
@@ -24,14 +28,17 @@
 
 <script>
 export default {
-  created() {
-    this.$vuetify.theme.dark = true
+  watch: {
+    modeDark(value) {
+      this.$vuetify.theme.dark = value
+    },
   },
   data() {
     return {
       clipped: false,
       drawer: false,
       fixed: false,
+      modeDark: false,
       items: [
         {
           icon: 'mdi-apps',
@@ -39,27 +46,27 @@ export default {
           to: '/',
         },
         {
-          icon: 'mdi-chart-bubble',
+          icon: 'mdi-file-document',
           title: 'Contratos',
           to: '/contratos',
         },
         {
-          icon: 'mdi-chart-bubble',
+          icon: 'mdi-account-tie-outline',
           title: 'Personas',
           to: '/personas',
         },
         {
-          icon: 'mdi-chart-bubble',
+          icon: 'mdi-gender-non-binary',
           title: 'Sexos',
           to: '/sexos',
         },
         {
-          icon: 'mdi-chart-bubble',
+          icon: 'mdi-state-machine',
           title: 'Estados',
           to: '/estados',
         },
         {
-          icon: 'mdi-chart-bubble',
+          icon: 'mdi-account-arrow-left',
           title: 'Solicitantes',
           to: '/solicitantes',
         },

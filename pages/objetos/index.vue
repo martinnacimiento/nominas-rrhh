@@ -14,11 +14,12 @@
           v-btn(text @click="resetDialog") Cancelar
           v-btn(text @click="destroy(item.id)") Eliminar
     v-card(raised)
-      v-data-table.elevation-1(:headers='headers' :items='objects' sort-by='id')
+      v-data-table.elevation-1(:headers='headers' :items='objects' :search="search" sort-by='id')
         template( v-slot:top)
           v-toolbar(flat)
             v-toolbar-title Sexos
             v-divider(inset vertical).mx-4
+            v-text-field(v-model="search" append-icon="mdi-table-search" label="Buscar" single-line hide-details)
             v-spacer
             v-btn(color="primary" small :to="{name: 'objetos-nuevo'}")
               v-icon mdi-plus-circle-outline
@@ -37,13 +38,20 @@ export default {
     headers: [
       { text: 'ID', value: 'id' },
       { text: 'Objeto', value: 'object' },
-      { text: 'Acciones', align: 'right', value: 'actions' },
+      {
+        text: 'Acciones',
+        align: 'right',
+        value: 'actions',
+        sortable: false,
+        filterable: false,
+      },
     ],
     dialog: false,
     item: { object: '' },
     message: '',
     snackbar: false,
     color: 'green',
+    search: '',
   }),
   methods: {
     async get() {
