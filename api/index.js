@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const baseDomain = 'http://192.168.1.4:3000'
+const baseDomain = process.env.baseUrl
 const baseURL = `${baseDomain}`
 
 export default axios.create({
