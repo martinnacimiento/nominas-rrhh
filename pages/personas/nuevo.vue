@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     v-snackbar(v-model="snackbar" :color="color") {{ message }}
-    v-card(raised)
+    v-card(class="rounded-lg" :elevation="12")
       v-card-title Nueva persona
       v-card-text
         v-form(ref="form" v-model="valid" lazy-validation)
@@ -71,21 +71,23 @@
                   item-value="id"
                   v-model="person.sex_id"
                   :rules="[rules.required]"
+                  :loading="$fetchState.pending"
               )
       v-card-actions
         v-spacer
         v-btn(outlined @click="$router.go(-1)") Volver
-        v-btn(outlined @click="save") Guardar
+        v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
 import api from '@/api'
 export default {
   name: 'personas-nuevo',
-  async asyncData({ params }) {
+  async fetch() {
     const { data: sexes } = await api.get(`sexos`)
-    return { sexes: sexes.sexes }
+    this.sexes = sexes.sexes
   },
   data: () => ({
+    sexes: [],
     valid: false,
     snackbar: false,
     color: 'green',
@@ -95,11 +97,13 @@ export default {
       counter: (value) => value?.length <= 50 || '50 caracteres máximo.',
     },
     person: { person: '' },
+    loading: false,
   }),
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
         try {
+          this.loading = true
           const { data } = await api.post(`personas`, {
             surname: this.person.surname,
             name: this.person.name,
@@ -116,6 +120,7 @@ export default {
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }
+        this.loading = false
       }
     },
     snack(message, color = 'green') {

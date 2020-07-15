@@ -6,15 +6,21 @@
       @click:outside="resetDialog"
       width="500"
     )
-      v-card
+      v-card(class="rounded-lg")
         v-card-title
         v-card-text Estas seguro que desea eliminar el contrato {{item.id}}?
         v-card-actions
           v-spacer
           v-btn(text @click="resetDialog") Cancelar
           v-btn(text @click="destroy(item.id)") Eliminar
-    v-card(raised)
-      v-data-table.elevation-1(:headers='headers' :items='contracts' :search="search" sort-by='id')
+    v-card(class="rounded-lg" :elevation="12")
+      v-data-table(
+        :headers='headers'
+        :items='contracts'
+        :search="search"
+        :loading="$fetchState.pending"
+        sort-by='id'
+      )
         template( v-slot:top)
           v-toolbar(flat)
             v-toolbar-title Contratos
@@ -34,11 +40,12 @@
 <script>
 import api from '@/api'
 export default {
-  async asyncData({ params }) {
+  async fetch() {
     const { data } = await api.get('contratos')
-    return { contracts: data.contracts }
+    this.contracts = data.contracts
   },
   data: () => ({
+    contracts: [],
     headers: [
       { text: 'ID', value: 'id' },
       { text: 'Desde', value: 'date_from' },

@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     v-snackbar(v-model="snackbar" :color="color") {{ message }}
-    v-card(raised)
+    v-card(class="rounded-lg" :elevation="12")
       v-card-title Nuevo solicitante
       v-card-text
         v-form(ref="form" v-model="valid" lazy-validation)
@@ -15,7 +15,7 @@
       v-card-actions
         v-spacer
         v-btn(outlined @click="$router.go(-1)") Volver
-        v-btn(outlined @click="save") Guardar
+        v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
 import api from '@/api'
@@ -31,10 +31,12 @@ export default {
       counter: (value) => value?.length <= 100 || '100 caracteres máximo.',
     },
     applicant: { applicant: '' },
+    loading: false,
   }),
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
+        this.loading = true
         try {
           const { data } = await api.post(`solicitantes`, {
             applicant: this.applicant.applicant,
@@ -44,6 +46,7 @@ export default {
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }
+        this.loading = false
       }
     },
     snack(message, color = 'green') {

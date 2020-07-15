@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     v-snackbar(v-model="snackbar" :color="color") {{ message }}
-    v-card(raised)
+    v-card(:loading="$fetchState.pending" class="rounded-lg" :elevation="12")
       v-card-title Editar contrato
       v-card-text
         v-form(ref="form" v-model="valid" lazy-validation)
@@ -90,28 +90,31 @@
       v-card-actions
         v-spacer
         v-btn(outlined @click="$router.go(-1)") Volver
-        v-btn(outlined @click="save") Guardar
+        v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
 import api from '@/api'
 export default {
   name: 'contratos-id',
-  async asyncData({ params }) {
-    const { id } = params
+  async fetch() {
+    const { id } = this.$route.params
     const { data: contract } = await api.get(`contratos/${id}`)
     const { data: applicants } = await api.get(`solicitantes`)
     const { data: objects } = await api.get(`objetos`)
     const { data: persons } = await api.get(`personas`)
     const { data: states } = await api.get(`estados`)
-    return {
-      contract: contract.contract,
-      applicants: applicants.applicants,
-      objects: objects.objects,
-      persons: persons.persons,
-      states: states.states,
-    }
+    this.contract = contract.contract
+    this.applicants = applicants.applicants
+    this.objects = objects.objects
+    this.persons = persons.persons
+    this.states = states.states
   },
   data: () => ({
+    contract: {},
+    applicants: [],
+    objects: [],
+    persons: [],
+    states: [],
     valid: false,
     snackbar: false,
     color: 'green',
@@ -123,11 +126,13 @@ export default {
     menu1: false,
     menu2: false,
     menu3: false,
+    loading: false,
   }),
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
         try {
+          this.loading = true
           const { data } = await api.put(`contratos/${this.contract.id}`, {
             date_order: this.contract.date_order,
             number_order: this.contract.number_order,
@@ -137,6 +142,7 @@ export default {
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }
+        this.loading = false
       }
     },
     snack(message, color = 'green') {

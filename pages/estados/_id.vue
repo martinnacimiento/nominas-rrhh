@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     v-snackbar(v-model="snackbar" :color="color") {{ message }}
-    v-card(raised)
+    v-card(:loading="$fetchState.pending" class="rounded-lg" :elevation="12")
       v-card-title Editar estado
       v-card-text
         v-form(ref="form" v-model="valid" lazy-validation)
@@ -22,30 +22,33 @@
       v-card-actions
         v-spacer
         v-btn(outlined @click="$router.go(-1)") Volver
-        v-btn(outlined @click="save") Guardar
+        v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
 import api from '@/api'
 export default {
   name: 'estados-id',
-  async asyncData({ params }) {
-    const { id } = params
+  async fetch() {
+    const { id } = this.$route.params
     const { data } = await api.get(`estados/${id}`)
-    return { state: data.state }
+    this.state = data.state
   },
   data: () => ({
+    state: {},
     valid: false,
     snackbar: false,
     color: 'green',
     message: '',
     rules: {
       required: (value) => !!value || 'Requerido.',
-      counter: (value) => value.length <= 20 || '20 caracteres máximo.',
+      counter: (value) => value?.length <= 20 || '20 caracteres máximo.',
     },
+    loading: false,
   }),
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
+        this.loading = true
         try {
           const { data } = await api.put(`estados/${this.state.id}`, {
             state: this.state.state,
@@ -54,6 +57,7 @@ export default {
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }
+        this.loading = false
       }
     },
     snack(message, color = 'green') {

@@ -1,7 +1,7 @@
 <template lang="pug">
   div
     v-snackbar(v-model="snackbar" :color="color") {{ message }}
-    v-card(raised)
+    v-card(class="rounded-lg" :elevation="12")
       v-card-title Nuevo contrato
       v-card-text
         v-form(ref="form" v-model="valid" lazy-validation)
@@ -57,6 +57,7 @@
                   item-value="id"
                   v-model="contract.state_id"
                   :rules="[rules.required]"
+                  :loading="$fetchState.pending"
               )
             v-col(cols="12" md="6")
               v-select(
@@ -66,6 +67,7 @@
                   item-value="id"
                   v-model="contract.applicant_id"
                   :rules="[rules.required]"
+                  :loading="$fetchState.pending"
               )
             v-col(cols="12" md="6")
               v-select(
@@ -75,6 +77,7 @@
                   item-value="id"
                   v-model="contract.object_id"
                   :rules="[rules.required]"
+                  :loading="$fetchState.pending"
               )
             v-col(cols="12" md="6")
               v-select(
@@ -84,29 +87,32 @@
                   item-value="id"
                   v-model="contract.person_id"
                   :rules="[rules.required]"
+                  :loading="$fetchState.pending"
               )
       v-card-actions
         v-spacer
         v-btn(outlined @click="$router.go(-1)") Volver
-        v-btn(outlined @click="save") Guardar
+        v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
 import api from '@/api'
 export default {
   name: 'contratos-id',
-  async asyncData({ params }) {
+  async fetch() {
     const { data: applicants } = await api.get(`solicitantes`)
     const { data: objects } = await api.get(`objetos`)
     const { data: persons } = await api.get(`personas`)
     const { data: states } = await api.get(`estados`)
-    return {
-      applicants: applicants.applicants,
-      objects: objects.objects,
-      persons: persons.persons,
-      states: states.states,
-    }
+    this.applicants = applicants.applicants
+    this.objects = objects.objects
+    this.persons = persons.persons
+    this.states = states.states
   },
   data: () => ({
+    applicants: [],
+    objects: [],
+    persons: [],
+    states: [],
     valid: false,
     snackbar: false,
     color: 'green',
@@ -129,10 +135,12 @@ export default {
       object_id: null,
       person_id: null,
     },
+    loading: false,
   }),
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
+        this.loading = true
         try {
           const { data } = await api.post(`contratos`, {
             date_from: this.contract.date_from,
@@ -149,6 +157,7 @@ export default {
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }
+        this.loading = false
       }
     },
     snack(message, color = 'green') {

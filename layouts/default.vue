@@ -28,11 +28,6 @@
 
 <script>
 export default {
-  watch: {
-    modeDark(value) {
-      this.$vuetify.theme.dark = value
-    },
-  },
   data() {
     return {
       clipped: false,
@@ -81,6 +76,11 @@ export default {
       rightDrawer: false,
       title: 'Contratos',
     }
+  },
+  watch: {
+    modeDark(value) {
+      this.$vuetify.theme.dark = value
+    },
   },
 }
 </script>
