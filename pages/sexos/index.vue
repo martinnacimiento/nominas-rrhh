@@ -34,11 +34,10 @@
           v-icon(small @click="confirmation(item)").mr-2 mdi-delete
 </template>
 <script>
-import api from '@/api'
 export default {
   async fetch() {
-    const { data } = await api.get('sexos')
-    this.sexes = data.sexes
+    const { sexes } = await this.$axios.$get('sexos')
+    this.sexes = sexes
   },
   data: () => ({
     sexes: [],
@@ -62,8 +61,8 @@ export default {
   }),
   methods: {
     async get() {
-      const { data } = await api.get(`sexos`)
-      this.sexes = data.sexes
+      const { sexes } = await this.$axios.$get(`sexos`)
+      this.sexes = sexes
     },
     confirmation(item) {
       this.item = item
@@ -74,7 +73,7 @@ export default {
       this.dialog = false
     },
     async destroy(id) {
-      await api.delete(`sexos/${id}`)
+      await this.$axios.$delete(`sexos/${id}`)
       this.get()
       this.resetDialog()
       this.snack('El sexo ha sido eliminado.')

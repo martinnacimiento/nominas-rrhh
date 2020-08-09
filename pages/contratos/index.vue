@@ -38,11 +38,10 @@
           v-icon(small @click="confirmation(item)").mr-2 mdi-delete
 </template>
 <script>
-import api from '@/api'
 export default {
   async fetch() {
-    const { data } = await api.get('contratos')
-    this.contracts = data.contracts
+    const { contracts } = await this.$axios.$get('contratos')
+    this.contracts = contracts
   },
   data: () => ({
     contracts: [],
@@ -69,8 +68,8 @@ export default {
   }),
   methods: {
     async get() {
-      const { data } = await api.get(`contratos`)
-      this.contracts = data.contracts
+      const { contracts } = await this.$axios.$get(`contratos`)
+      this.contracts = contracts
     },
     confirmation(item) {
       this.item = item
@@ -81,7 +80,7 @@ export default {
       this.dialog = false
     },
     async destroy(id) {
-      await api.delete(`contratos/${id}`)
+      await this.$axios.$delete(`contratos/${id}`)
       this.get()
       this.resetDialog()
       this.snack('El contrato ha sido eliminado.')

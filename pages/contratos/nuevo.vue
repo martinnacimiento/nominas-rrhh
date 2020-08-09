@@ -95,18 +95,17 @@
         v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
-import api from '@/api'
 export default {
-  name: 'contratos-id',
+  name: 'ContratosId',
   async fetch() {
-    const { data: applicants } = await api.get(`solicitantes`)
-    const { data: objects } = await api.get(`objetos`)
-    const { data: persons } = await api.get(`personas`)
-    const { data: states } = await api.get(`estados`)
-    this.applicants = applicants.applicants
-    this.objects = objects.objects
-    this.persons = persons.persons
-    this.states = states.states
+    const { applicants } = await this.$axios.$get(`solicitantes`)
+    const { objects } = await this.$axios.$get(`objetos`)
+    const { persons } = await this.$axios.$get(`personas`)
+    const { states } = await this.$axios.$get(`estados`)
+    this.applicants = applicants
+    this.objects = objects
+    this.persons = persons
+    this.states = states
   },
   data: () => ({
     applicants: [],
@@ -142,7 +141,7 @@ export default {
       if (this.$refs.form.validate()) {
         this.loading = true
         try {
-          const { data } = await api.post(`contratos`, {
+          const { message } = await this.$axios.$post(`contratos`, {
             date_from: this.contract.date_from,
             date_until: this.contract.date_until,
             date_order: this.contract.date_order,
@@ -153,7 +152,7 @@ export default {
             object_id: this.contract.object_id,
             person_id: this.contract.person_id,
           })
-          this.snack(data.message)
+          this.snack(message)
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }

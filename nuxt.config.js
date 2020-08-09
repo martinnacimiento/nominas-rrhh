@@ -4,7 +4,7 @@ import es from 'vuetify/es5/locale/es'
 export default {
   server: {
     port: 8000, // default: 3000
-    host: '0.0.0.0', // default: localhost
+    host: 'localhost', // default: localhost
   },
   /*
    ** Nuxt rendering mode
@@ -71,7 +71,9 @@ export default {
    ** Axios module configuration
    ** See https://axios.nuxtjs.org/options
    */
-  axios: {},
+  axios: {
+    baseURL: process.env.BASE_URL || 'http://localhost:3000', // Used as fallback if no runtime config is provided
+  },
   /*
    ** vuetify module configuration
    ** https://github.com/nuxt-community/vuetify-module

@@ -25,13 +25,12 @@
         v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
-import api from '@/api'
 export default {
-  name: 'objetos-id',
+  name: 'ObjetosId',
   async fetch() {
     const { id } = this.$route.params
-    const { data } = await api.get(`objetos/${id}`)
-    this.object = data.object
+    const { object } = await this.$axios.$get(`objetos/${id}`)
+    this.object = object
   },
   data: () => ({
     object: {},
@@ -50,10 +49,13 @@ export default {
       if (this.$refs.form.validate()) {
         try {
           this.loading = true
-          const { data } = await api.put(`objetos/${this.object.id}`, {
-            object: this.object.object,
-          })
-          this.snack(data.message)
+          const { message } = await this.$axios.$put(
+            `objetos/${this.object.id}`,
+            {
+              object: this.object.object,
+            }
+          )
+          this.snack(message)
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }

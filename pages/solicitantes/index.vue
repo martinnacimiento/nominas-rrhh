@@ -34,11 +34,10 @@
           v-icon(small @click="confirmation(item)").mr-2 mdi-delete
 </template>
 <script>
-import api from '@/api'
 export default {
   async fetch() {
-    const { data } = await api.get('solicitantes')
-    this.applicants = data.applicants
+    const { applicants } = await this.$axios.$get('solicitantes')
+    this.applicants = applicants
   },
   data: () => ({
     applicants: [],
@@ -62,8 +61,8 @@ export default {
   }),
   methods: {
     async get() {
-      const { data } = await api.get(`solicitantes`)
-      this.applicants = data.applicants
+      const { applicants } = await this.$axios.$get(`solicitantes`)
+      this.applicants = applicants
     },
     confirmation(item) {
       this.item = item
@@ -74,7 +73,7 @@ export default {
       this.dialog = false
     },
     async destroy(id) {
-      await api.delete(`solicitantes/${id}`)
+      await this.$axios.$delete(`solicitantes/${id}`)
       this.get()
       this.resetDialog()
       this.snack('El solicitante ha sido eliminado.')

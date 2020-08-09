@@ -18,9 +18,8 @@
         v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
-import api from '@/api'
 export default {
-  name: 'sexos-nuevo',
+  name: 'SexosNuevo',
   data: () => ({
     valid: false,
     snackbar: false,
@@ -38,10 +37,10 @@ export default {
       if (this.$refs.form.validate()) {
         this.loading = true
         try {
-          const { data } = await api.post(`sexos`, {
+          const { message } = await this.$axios.$post(`sexos`, {
             sex: this.sex.sex,
           })
-          this.snack(data.message)
+          this.snack(message)
           this.$refs.form.reset()
         } catch (error) {
           this.snack(error.response.data.message, 'error')

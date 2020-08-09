@@ -25,13 +25,12 @@
         v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
-import api from '@/api'
 export default {
-  name: 'sexos-id',
+  name: 'SexosId',
   async fetch() {
     const { id } = this.$route.params
-    const { data } = await api.get(`sexos/${id}`)
-    this.sex = data.sex
+    const { sex } = await this.$axios.$get(`sexos/${id}`)
+    this.sex = sex
   },
   data: () => ({
     sex: {},
@@ -50,10 +49,10 @@ export default {
       if (this.$refs.form.validate()) {
         this.loading = true
         try {
-          const { data } = await api.put(`sexos/${this.sex.id}`, {
+          const { message } = await this.$axios.$put(`sexos/${this.sex.id}`, {
             sex: this.sex.sex,
           })
-          this.snack(data.message)
+          this.snack(message)
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }

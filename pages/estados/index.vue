@@ -34,11 +34,10 @@
           v-icon(small @click="confirmation(item)").mr-2 mdi-delete
 </template>
 <script>
-import api from '@/api'
 export default {
   async fetch() {
-    const { data } = await api.get('estados')
-    this.states = data.states
+    const { states } = await this.$axios.$get('estados')
+    this.states = states
   },
   data: () => ({
     states: [],
@@ -62,8 +61,8 @@ export default {
   }),
   methods: {
     async get() {
-      const { data } = await api.get(`estados`)
-      this.states = data.states
+      const { states } = await this.$axios.$get(`estados`)
+      this.states = states
     },
     confirmation(item) {
       this.item = item
@@ -74,7 +73,7 @@ export default {
       this.dialog = false
     },
     async destroy(id) {
-      await api.delete(`estados/${id}`)
+      await this.$axios.$delete(`estados/${id}`)
       this.get()
       this.resetDialog()
       this.snack('El estado ha sido eliminado.')

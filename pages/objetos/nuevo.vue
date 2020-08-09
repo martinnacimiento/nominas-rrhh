@@ -18,9 +18,8 @@
         v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
-import api from '@/api'
 export default {
-  name: 'objetos-nuevo',
+  name: 'ObjetosNuevo',
   data: () => ({
     valid: false,
     snackbar: false,
@@ -38,10 +37,10 @@ export default {
       if (this.$refs.form.validate()) {
         this.loading = true
         try {
-          const { data } = await api.post(`objetos`, {
+          const { message } = await this.$axios.$post(`objetos`, {
             object: this.object.object,
           })
-          this.snack(data.message)
+          this.snack(message)
           this.$refs.form.reset()
         } catch (error) {
           this.snack(error.response.data.message, 'error')

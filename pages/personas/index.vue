@@ -8,7 +8,7 @@
     )
       v-card(class="rounded-lg")
         v-card-title
-        v-card-text Estas seguro que desea eliminar la persona {{item.person}}?
+        v-card-text Estas seguro que desea eliminar la persona {{item.id}}?
         v-card-actions
           v-spacer
           v-btn(text @click="resetDialog") Cancelar
@@ -34,11 +34,10 @@
           v-icon(small @click="confirmation(item)").mr-2 mdi-delete
 </template>
 <script>
-import api from '@/api'
 export default {
   async fetch() {
-    const { data } = await api.get('personas')
-    this.persons = data.persons
+    const { persons } = await this.$axios.$get('personas')
+    this.persons = persons
   },
   data: () => ({
     persons: [],
@@ -64,8 +63,8 @@ export default {
   }),
   methods: {
     async get() {
-      const { data } = await api.get(`personas`)
-      this.persons = data.persons
+      const { persons } = await this.$axios.$get(`personas`)
+      this.persons = persons
     },
     confirmation(item) {
       this.item = item
@@ -76,7 +75,7 @@ export default {
       this.dialog = false
     },
     async destroy(id) {
-      await api.delete(`personas/${id}`)
+      await this.$axios.$delete(`personas/${id}`)
       this.get()
       this.resetDialog()
       this.snack('La persona ha sido eliminado.')

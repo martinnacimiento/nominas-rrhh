@@ -79,12 +79,11 @@
         v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
-import api from '@/api'
 export default {
-  name: 'personas-nuevo',
+  name: 'PersonasNuevo',
   async fetch() {
-    const { data: sexes } = await api.get(`sexos`)
-    this.sexes = sexes.sexes
+    const { sexes } = await this.$axios.$get(`sexos`)
+    this.sexes = sexes
   },
   data: () => ({
     sexes: [],
@@ -98,13 +97,14 @@ export default {
     },
     person: { person: '' },
     loading: false,
+    menu: false,
   }),
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
         try {
           this.loading = true
-          const { data } = await api.post(`personas`, {
+          const { message } = await this.$axios.$post(`personas`, {
             surname: this.person.surname,
             name: this.person.name,
             dni: this.person.dni,
@@ -115,7 +115,7 @@ export default {
             cuit: this.person.cuit,
             sex_id: this.person.sex_id,
           })
-          this.snack(data.message)
+          this.snack(message)
           this.$refs.form.reset()
         } catch (error) {
           this.snack(error.response.data.message, 'error')

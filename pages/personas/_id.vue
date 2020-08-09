@@ -77,7 +77,7 @@
                   item-text="sex"
                   item-value="id"
                   v-model="person.sex_id"
-                  :rules="rules.required"
+                  :rules="[rules.required]"
               )
       v-card-actions
         v-spacer
@@ -85,15 +85,14 @@
         v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
-import api from '@/api'
 export default {
-  name: 'personas-id',
+  name: 'PersonasId',
   async fetch() {
     const { id } = this.$route.params
-    const { data: person } = await api.get(`personas/${id}`)
-    const { data: sexes } = await api.get(`sexos`)
-    this.person = person.person
-    this.sexes = sexes.sexes
+    const { person } = await this.$axios.$get(`personas/${id}`)
+    const { sexes } = await this.$axios.$get(`sexos`)
+    this.person = person
+    this.sexes = sexes
   },
   data: () => ({
     person: {},
@@ -114,18 +113,21 @@ export default {
       if (this.$refs.form.validate()) {
         try {
           this.loading = true
-          const { data } = await api.put(`personas/${this.person.id}`, {
-            surname: this.person.surname,
-            name: this.person.name,
-            dni: this.person.dni,
-            domicile: this.person.domicile,
-            mail: this.person.mail,
-            telephone: this.person.telephone,
-            date_birth: this.person.date_birth,
-            cuit: this.person.cuit,
-            sex_id: this.person.sex_id,
-          })
-          this.snack(data.message)
+          const { message } = await this.$axios.$put(
+            `personas/${this.person.id}`,
+            {
+              surname: this.person.surname,
+              name: this.person.name,
+              dni: this.person.dni,
+              domicile: this.person.domicile,
+              mail: this.person.mail,
+              telephone: this.person.telephone,
+              date_birth: this.person.date_birth,
+              cuit: this.person.cuit,
+              sex_id: this.person.sex_id,
+            }
+          )
+          this.snack(message)
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }

@@ -18,13 +18,12 @@
         v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
-import api from '@/api'
 export default {
-  name: 'solicitantes-id',
+  name: 'SolicitantesId',
   async fetch() {
     const { id } = this.$route.params
-    const { data } = await api.get(`solicitantes/${id}`)
-    this.applicant = data.applicant
+    const { applicant } = await this.$axios.$get(`solicitantes/${id}`)
+    this.applicant = applicant
   },
   data: () => ({
     applicant: {},
@@ -43,10 +42,13 @@ export default {
       if (this.$refs.form.validate()) {
         this.loading = true
         try {
-          const { data } = await api.put(`solicitantes/${this.applicant.id}`, {
-            applicant: this.applicant.applicant,
-          })
-          this.snack(data.message)
+          const { message } = await this.$axios.$put(
+            `solicitantes/${this.applicant.id}`,
+            {
+              applicant: this.applicant.applicant,
+            }
+          )
+          this.snack(message)
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }

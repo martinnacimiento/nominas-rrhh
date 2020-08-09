@@ -1,6 +1,7 @@
 <template lang="pug">
   v-app(dark)
-    v-navigation-drawer(v-model='drawer' :mini-variant='miniVariant' :clipped='clipped' fixed app)
+    CoModalLogin(v-model="modal")
+    v-navigation-drawer(v-if="isAuth" v-model='drawer' :mini-variant='miniVariant' :clipped='clipped' fixed app)
       v-list
         v-list-item(v-for='(item, i) in items' :key='i' :to='item.to' router exact)
           v-list-item-action
@@ -15,8 +16,19 @@
 
       v-toolbar-title(v-text='title')
       v-spacer
-      v-btn(fab small @click='modeDark = !modeDark').mr-2
-        v-icon mdi-theme-light-dark
+      v-fade-transition
+        v-tooltip(v-if="!isAuth" bottom)
+          template(#activator="{on}")
+            v-btn(fab small @click="modal = !modal" v-on="on").mr-2
+              v-icon mdi-login
+          span Iniciar sesión
+      v-fade-transition
+        CoMenuUser(v-if="isAuth")
+      v-tooltip(bottom)
+        template(#activator="{on}")
+          v-btn(fab small @click='modeDark = !modeDark' v-on="on").mr-2
+            v-icon mdi-theme-light-dark
+        span Modo noche
 
     v-main
       v-container(fluid)
@@ -27,7 +39,11 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+import CoModalLogin from '@/components/CoModalLogin'
+import CoMenuUser from '@/components/CoMenuUser'
 export default {
+  components: { CoModalLogin, CoMenuUser },
   data() {
     return {
       clipped: false,
@@ -70,12 +86,26 @@ export default {
           title: 'Objetos',
           to: '/objetos',
         },
+        {
+          icon: 'mdi-account',
+          title: 'Usuarios',
+          to: '/usuarios',
+        },
+        {
+          icon: 'mdi-account-supervisor',
+          title: 'Roles',
+          to: '/roles',
+        },
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
       title: 'Contratos',
+      modal: false,
     }
+  },
+  computed: {
+    ...mapGetters(['can', 'isAuth']),
   },
   watch: {
     modeDark(value) {

@@ -93,21 +93,20 @@
         v-btn(outlined @click="save" :loading="loading") Guardar
 </template>
 <script>
-import api from '@/api'
 export default {
-  name: 'contratos-id',
+  name: 'ContratosId',
   async fetch() {
     const { id } = this.$route.params
-    const { data: contract } = await api.get(`contratos/${id}`)
-    const { data: applicants } = await api.get(`solicitantes`)
-    const { data: objects } = await api.get(`objetos`)
-    const { data: persons } = await api.get(`personas`)
-    const { data: states } = await api.get(`estados`)
-    this.contract = contract.contract
-    this.applicants = applicants.applicants
-    this.objects = objects.objects
-    this.persons = persons.persons
-    this.states = states.states
+    const { contract } = await this.$axios.$get(`contratos/${id}`)
+    const { applicants } = await this.$axios.$get(`solicitantes`)
+    const { objects } = await this.$axios.$get(`objetos`)
+    const { persons } = await this.$axios.$get(`personas`)
+    const { states } = await this.$axios.$get(`estados`)
+    this.contract = contract
+    this.applicants = applicants
+    this.objects = objects
+    this.persons = persons
+    this.states = states
   },
   data: () => ({
     contract: {},
@@ -133,12 +132,15 @@ export default {
       if (this.$refs.form.validate()) {
         try {
           this.loading = true
-          const { data } = await api.put(`contratos/${this.contract.id}`, {
-            date_order: this.contract.date_order,
-            number_order: this.contract.number_order,
-            reason: this.contract.reason,
-          })
-          this.snack(data.message)
+          const { message } = await this.$axios.$put(
+            `contratos/${this.contract.id}`,
+            {
+              date_order: this.contract.date_order,
+              number_order: this.contract.number_order,
+              reason: this.contract.reason,
+            }
+          )
+          this.snack(message)
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }
