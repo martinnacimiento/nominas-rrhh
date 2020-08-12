@@ -10,7 +10,8 @@ export const getters = {
     return !!state.auth
   },
   can: (state) => (permission) => {
-    return state.auth?.permissions.find((p) => p === permission)
+    if (permission === '*') return true
+    return state.auth?.scopes.find((p) => p === permission)
   },
 }
 
@@ -25,6 +26,9 @@ export const mutations = {
     // localStorage.setItem('is_dark_mode', status)
     state.is_dark_mode = status
   },
+  setScopes(state, scopes) {
+    state.auth.scopes = scopes
+  },
 }
 
 export const actions = {
@@ -38,7 +42,9 @@ export const actions = {
       )
       this.$axios.setToken(access_token, 'Bearer')
       const auth = jwtDecode(access_token)
+      const { permissions } = await this.$axios.$get('permisos/token')
       commit('setIsAuth', auth)
+      commit('setScopes', permissions)
     } catch (error) {
       commit('setIsAuth', null)
     }
@@ -47,5 +53,6 @@ export const actions = {
   delete_token({ commit }) {
     this.$axios.setToken(false)
     commit('setIsAuth', null)
+    this.$router.push('/')
   },
 }
