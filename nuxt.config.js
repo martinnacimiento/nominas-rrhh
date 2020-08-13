@@ -73,6 +73,7 @@ export default {
    */
   axios: {
     baseURL: process.env.BASE_URL || 'http://localhost:3000', // Used as fallback if no runtime config is provided
+    proxy: true,
   },
   /*
    ** vuetify module configuration
