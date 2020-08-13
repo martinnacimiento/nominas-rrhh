@@ -27,7 +27,7 @@
             v-divider(inset vertical).mx-4
             v-text-field(v-model="search" append-icon="mdi-table-search" label="Buscar" single-line hide-details)
             v-spacer
-            v-btn(color="primary" small :to="{name: 'roles-nuevo'}")
+            v-btn(v-if="can('create.role')" color="primary" small :to="{name: 'roles-nuevo'}")
               v-icon mdi-plus-circle-outline
         template(v-if="can('edit.role') || can('destroy.role')" v-slot:item.actions="{ item }")
           v-icon(v-if="can('edit.role')" small @click="$router.push({name: 'roles-id', params: { id: item.id}})").mr-2 mdi-pencil
