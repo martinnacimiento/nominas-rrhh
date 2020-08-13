@@ -4,6 +4,7 @@
       v-col.text-center(cols='12')
         h1.display-1.font-weight-thin.mb-4 Contratos
         h4.subheading Crea contratos hoy!
+        h4.subheading Pruebe con el nombre de usuario y contraseña: guest !
 </template>
 
 <script>
