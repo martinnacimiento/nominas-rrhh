@@ -29,11 +29,12 @@
             v-spacer
             v-btn(color="primary" small :to="{name: 'usuarios-nuevo'}")
               v-icon mdi-plus-circle-outline
-        template( v-slot:item.actions="{ item }")
-          v-icon(small @click="$router.push({name: 'usuarios-id', params: { id: item.id}})").mr-2 mdi-pencil
-          v-icon(small @click="confirmation(item)").mr-2 mdi-delete
+        template(v-if="can('edit.user') || can('destroy.user')" v-slot:item.actions="{ item }")
+          v-icon(v-if="can('edit.user')" small @click="$router.push({name: 'usuarios-id', params: { id: item.id}})").mr-2 mdi-pencil
+          v-icon(v-if="can('destroy.user')" small @click="confirmation(item)").mr-2 mdi-delete
 </template>
 <script>
+import { mapGetters } from 'vuex'
 export default {
   async fetch() {
     try {
@@ -63,6 +64,9 @@ export default {
     color: 'green',
     search: '',
   }),
+  computed: {
+    ...mapGetters(['can']),
+  },
   methods: {
     async get() {
       try {
