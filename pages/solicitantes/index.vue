@@ -27,13 +27,14 @@
             v-divider(inset vertical).mx-4
             v-text-field(v-model="search" append-icon="mdi-table-search" label="Buscar" single-line hide-details)
             v-spacer
-            v-btn(color="primary" small :to="{name: 'solicitantes-nuevo'}")
+            v-btn(v-if="can('create.applicant')" color="primary" small :to="{name: 'solicitantes-nuevo'}")
               v-icon mdi-plus-circle-outline
-        template( v-slot:item.actions="{ item }")
-          v-icon(small @click="$router.push({name: 'solicitantes-id', params: { id: item.id}})").mr-2 mdi-pencil
-          v-icon(small @click="confirmation(item)").mr-2 mdi-delete
+        template(v-if="can('edit.applicant') || can('destroy.applicant')" v-slot:item.actions="{ item }")
+          v-icon(v-if="can('edit.applicant')" small @click="$router.push({name: 'solicitantes-id', params: { id: item.id}})").mr-2 mdi-pencil
+          v-icon(v-if="can('destroy.applicant')" small @click="confirmation(item)").mr-2 mdi-delete
 </template>
 <script>
+import { mapGetters } from 'vuex'
 export default {
   async fetch() {
     const { applicants } = await this.$axios.$get('solicitantes')
@@ -59,6 +60,9 @@ export default {
     color: 'green',
     search: '',
   }),
+  computed: {
+    ...mapGetters(['can']),
+  },
   methods: {
     async get() {
       const { applicants } = await this.$axios.$get(`solicitantes`)
