@@ -85,10 +85,14 @@ export default {
       this.dialog = false
     },
     async destroy(id) {
-      await this.$axios.$delete(`usuarios/${id}`)
-      this.get()
-      this.resetDialog()
-      this.snack('El usuario ha sido eliminado.')
+      try {
+        await this.$axios.$delete(`usuarios/${id}`)
+        this.get()
+        this.resetDialog()
+        this.snack('El usuario ha sido eliminado.')
+      } catch (error) {
+        this.snack(error.response.data.error, 'error')
+      }
     },
     snack(message, color = 'green') {
       this.color = color
