@@ -2,9 +2,10 @@
 Bienvenido a este proyecto de contratos que estoy realizando para la cátedra de Diseño y Aplicaciones en la Web.
 
 ## Versiones 🌀
-El proyecto va a contar con 2 versiones:
+El proyecto va a contar con versiones:
 - V1.0: Solamente CRUDs de los recursos del proyecto.
 - V2.0: Se agrega seguridad (autenticación y autorización) mediante tokens JWT.
+- V2.2: Se agregaron scopes para visualizar o no ciertas funciones en el modulo de usuarios y roles, se valida que la fecha 'desde' no sea mayor que la fecha 'hasta' en contratos.
 
 ## Requisitos ✋
 - Node.js
