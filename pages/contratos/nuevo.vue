@@ -10,7 +10,7 @@
               v-menu(ref='menu1' v-model='menu1' :close-on-content-click='false' :return-value.sync='contract.date_from' transition='scale-transition' offset-y min-width='290px')
                 template(v-slot:activator='{ on, attrs }')
                   v-text-field(v-model='contract.date_from' label='Desde' prepend-icon='mdi-calendar' readonly v-bind='attrs' v-on='on' :rules="[rules.required]")
-                v-date-picker(v-model='contract.date_from' no-title scrollable)
+                v-date-picker(v-model='contract.date_from' :allowed-dates="allowedDatesFrom" no-title scrollable)
                   v-spacer
                   v-btn(text color='primary' @click='menu1 = false') Cancel
                   v-btn(text color='primary' @click='$refs.menu1.save(contract.date_from)') OK
@@ -18,7 +18,7 @@
               v-menu(ref='menu2' v-model='menu2' :close-on-content-click='false' :return-value.sync='contract.date_until' transition='scale-transition' offset-y min-width='290px')
                 template(v-slot:activator='{ on, attrs }')
                   v-text-field(v-model='contract.date_until' label='Hasta' prepend-icon='mdi-calendar' readonly v-bind='attrs' v-on='on' :rules="[rules.required]")
-                v-date-picker(v-model='contract.date_until' no-title scrollable)
+                v-date-picker(v-model='contract.date_until' :allowed-dates="allowedDatesUntil" no-title scrollable)
                   v-spacer
                   v-btn(text color='primary' @click='menu2 = false') Cancel
                   v-btn(text color='primary' @click='$refs.menu2.save(contract.date_until)') OK
@@ -163,6 +163,14 @@ export default {
       this.color = color
       this.message = message
       this.snackbar = true
+    },
+    allowedDatesFrom(date) {
+      if (!this.contract.date_until) return true
+      return date < this.contract.date_until
+    },
+    allowedDatesUntil(date) {
+      if (!this.contract.date_from) return true
+      return date > this.contract.date_from
     },
   },
 }
