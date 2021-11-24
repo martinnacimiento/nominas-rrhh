@@ -37,7 +37,7 @@
         nuxt
           
     v-footer(:fixed='fixed' app)
-      span Nacimiento Martin © {{ new Date().getFullYear() }}
+      span Nóminas © {{ new Date().getFullYear() }}
 </template>
 
 <script>
@@ -91,9 +91,9 @@ export default {
         },
         {
           icon: 'mdi-chart-bubble',
-          title: 'Objetos',
-          to: '/objetos',
-          scope: 'index.object',
+          title: 'Empresas',
+          to: '/empresas',
+          scope: '*',
         },
         {
           icon: 'mdi-account',
@@ -111,7 +111,7 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Contratos',
+      title: 'Nóminas',
       modal: false,
     }
   },

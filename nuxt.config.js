@@ -10,7 +10,7 @@ export default {
    ** Nuxt rendering mode
    ** See https://nuxtjs.org/api/configuration-mode
    */
-  mode: 'universal',
+  ssr: true,
   /*
    ** Nuxt target
    ** See https://nuxtjs.org/api/configuration-target
@@ -72,7 +72,7 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    baseURL: process.env.BASE_URL || 'http://localhost:3000', // Used as fallback if no runtime config is provided
+    baseURL: process.env.BASE_URL || 'http://186.153.168.116/api', // Used as fallback if no runtime config is provided
     proxy: false,
   },
   /*
@@ -106,6 +106,6 @@ export default {
    */
   build: {},
   env: {
-    baseUrl: process.env.BASE_URL || 'http://localhost:3000',
+    baseUrl: process.env.BASE_URL || 'http://186.153.168.116/api',
   },
 }

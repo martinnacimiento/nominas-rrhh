@@ -8,7 +8,7 @@
     )
       v-card(class="rounded-lg")
         v-card-title
-        v-card-text Estas seguro que desea eliminar el estado {{item.state}}?
+        v-card-text Estas seguro que desea eliminar la empresa {{item.denominacion_social}}?
         v-card-actions
           v-spacer
           v-btn(text @click="resetDialog") Cancelar
@@ -16,35 +16,38 @@
     v-card(class="rounded-lg" :elevation="12")
       v-data-table(
         :headers='headers'
-        :items='states'
+        :items='companies'
         :search="search"
         :loading="$fetchState.pending"
         sort-by='id'
       )
         template( v-slot:top)
           v-toolbar(flat)
-            v-toolbar-title Estados
+            v-toolbar-title Empresas
             v-divider(inset vertical).mx-4
             v-text-field(v-model="search" append-icon="mdi-table-search" label="Buscar" single-line hide-details)
             v-spacer
-            v-btn(v-if="can('create.state')" color="primary" small :to="{name: 'estados-nuevo'}")
+            v-btn(v-if="can('*')" color="primary" small :to="{name: 'empresas-nuevo'}")
               v-icon mdi-plus-circle-outline
-        template(v-if="can('edit.state') || can('destroy.state')" v-slot:item.actions="{ item }")
-          v-icon(v-if="can('edit.state')" small @click="$router.push({name: 'estados-id', params: { id: item.id}})").mr-2 mdi-pencil
-          v-icon(v-if="can('destroy.state')" small @click="confirmation(item)").mr-2 mdi-delete
+        template(v-if="can('*') || can('*')" v-slot:item.actions="{ item }")
+          v-icon(v-if="can('*')" small @click="$router.push({name: 'empresas-id', params: { id: item.id}})").mr-2 mdi-pencil
+          v-icon(v-if="can('*')" small @click="confirmation(item)").mr-2 mdi-delete
 </template>
 <script>
 import { mapGetters } from 'vuex'
 export default {
   async fetch() {
-    const { states } = await this.$axios.$get('estados')
-    this.states = states
+    const { data } = await this.$axios.$get('empresas')
+    this.companies = data
   },
   data: () => ({
-    states: [],
+    companies: [],
     headers: [
       { text: 'ID', value: 'id' },
-      { text: 'Estado', value: 'state' },
+      { text: 'Denominación social', value: 'denominacion_social' },
+      { text: 'Clasificacion', value: 'clasificacion' },
+      { text: 'Domicilio', value: 'domicilio' },
+      { text: 'Telefono', value: 'telefono' },
       {
         text: 'Acciones',
         align: 'right',
@@ -65,8 +68,8 @@ export default {
   },
   methods: {
     async get() {
-      const { states } = await this.$axios.$get(`estados`)
-      this.states = states
+      const { data } = await this.$axios.$get(`empresas`)
+      this.companies = data
     },
     confirmation(item) {
       this.item = item
@@ -77,10 +80,10 @@ export default {
       this.dialog = false
     },
     async destroy(id) {
-      await this.$axios.$delete(`estados/${id}`)
+      await this.$axios.$delete(`empresas/${id}`)
       this.get()
       this.resetDialog()
-      this.snack('El estado ha sido eliminado.')
+      this.snack('La empresa ha sido eliminado.')
     },
     snack(message, color = 'green') {
       this.color = color

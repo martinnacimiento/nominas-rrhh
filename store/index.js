@@ -1,7 +1,10 @@
 import jwtDecode from 'jwt-decode'
 
 export const state = {
-  auth: null,
+  auth: {
+    sub: 'Martin Nacimiento',
+    scopes: [],
+  },
   is_dark_mode: false,
 }
 
