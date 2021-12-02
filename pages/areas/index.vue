@@ -4,7 +4,7 @@ div
   v-dialog(v-model='dialog', @click:outside='resetDialog', width='500')
     v-card.rounded-lg
       v-card-title
-      v-card-text Estas seguro que desea eliminar el contrato {{ item.nombre }}?
+      v-card-text Estas seguro que desea eliminar {{ item.nombre }}?
       v-card-actions
         v-spacer
         v-btn(text, @click='resetDialog') Cancelar
@@ -12,14 +12,14 @@ div
   v-card.rounded-lg(:elevation='12')
     v-data-table(
       :headers='headers',
-      :items='contracts',
+      :items='items',
       :search='search',
       :loading='$fetchState.pending',
       sort-by='id'
     )
       template(v-slot:top)
         v-toolbar(flat)
-          v-toolbar-title Contratos
+          v-toolbar-title Areas
           v-divider.mx-4(inset, vertical)
           v-text-field(
             v-model='search',
@@ -33,18 +33,14 @@ div
             v-if='can("*")',
             color='primary',
             small,
-            :to='{ name: "contratos-nuevo" }'
+            :to='{ name: "areas-nuevo" }'
           )
             v-icon mdi-plus-circle-outline
-      template(v-slot:item.date_from='{ item }')
-        | {{ item.date_from | dateL }}
-      template(v-slot:item.date_until='{ item }')
-        | {{ item.date_until | dateL }}
       template(v-if='can("*") || can("*")', v-slot:item.actions='{ item }')
         v-icon.mr-2(
           v-if='can("*")',
           small,
-          @click='$router.push({ name: "contratos-id", params: { id: item.id } })'
+          @click='$router.push({ name: "areas-id", params: { id: item.id } })'
         ) mdi-pencil
         v-icon.mr-2(v-if='can("*")', small, @click='confirmation(item)') mdi-delete
 </template>
@@ -52,18 +48,15 @@ div
 import { mapGetters } from 'vuex'
 export default {
   async fetch() {
-    const { data } = await this.$axios.$get('contratos')
-    this.contracts = data
+    const { data } = await this.$axios.$get('areas')
+    this.items = data
   },
   data: () => ({
-    contracts: [],
+    items: [],
     headers: [
       { text: 'ID', value: 'id' },
       { text: 'Nombre', value: 'nombre' },
-      { text: 'Fecha', value: 'fecha' },
-      { text: 'Empleado', value: 'empleado.apellido' },
-      { text: 'Cargo', value: 'cargo.nombre' },
-      { text: 'Tipo de contrato', value: 'tipoContrato.nombre' },
+      { text: 'Empresa', value: 'empresa.denominacion_social' },
       {
         text: 'Acciones',
         align: 'right',
@@ -73,7 +66,7 @@ export default {
       },
     ],
     dialog: false,
-    item: { object: '' },
+    item: { empresa: '' },
     message: '',
     snackbar: false,
     color: 'green',
@@ -84,25 +77,25 @@ export default {
   },
   methods: {
     async get() {
-      const { data } = await this.$axios.$get(`contratos`)
-      this.contracts = data
+      const { data } = await this.$axios.$get(`areas`)
+      this.items = data
     },
     confirmation(item) {
       this.item = item
       this.dialog = true
     },
     resetDialog() {
-      this.item = { contract: '' }
+      this.item = { sex: '' }
       this.dialog = false
     },
     async destroy(id) {
       try {
-        await this.$axios.$delete(`contratos/${id}`)
+        await this.$axios.$delete(`areas/${id}`)
         this.get()
         this.resetDialog()
-        this.snack('El contrato ha sido eliminado.')
+        this.snack('El area ha sido eliminada.')
       } catch (error) {
-        this.snack('Ups! No es posible esta accion', 'error')
+        this.snack('Ups! En este momento no puede realizar esta accion.', 'red')
       }
     },
     snack(message, color = 'green') {

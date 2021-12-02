@@ -8,7 +8,7 @@
     )
       v-card(class="rounded-lg")
         v-card-title
-        v-card-text Estas seguro que desea eliminar el sexo {{item.sex}}?
+        v-card-text Estas seguro que desea eliminar {{item.nombre}}?
         v-card-actions
           v-spacer
           v-btn(text @click="resetDialog") Cancelar
@@ -16,35 +16,36 @@
     v-card(class="rounded-lg" :elevation="12")
       v-data-table(
         :headers='headers'
-        :items='sexes'
+        :items='items'
         :search="search"
         :loading="$fetchState.pending"
         sort-by='id'
       )
         template( v-slot:top)
           v-toolbar(flat)
-            v-toolbar-title Sexos
+            v-toolbar-title Cargos
             v-divider(inset vertical).mx-4
             v-text-field(v-model="search" append-icon="mdi-table-search" label="Buscar" single-line hide-details)
             v-spacer
-            v-btn(v-if="can('create.sex')" color="primary" small :to="{name: 'sexos-nuevo'}")
+            v-btn(v-if="can('*')" color="primary" small :to="{name: 'cargos-nuevo'}")
               v-icon mdi-plus-circle-outline
-        template(v-if="can('edit.sex') || can('destroy.sex')" v-slot:item.actions="{ item }")
-          v-icon(v-if="can('edit.sex')" small @click="$router.push({name: 'sexos-id', params: { id: item.id}})").mr-2 mdi-pencil
-          v-icon(v-if="can('destroy.sex')" small @click="confirmation(item)").mr-2 mdi-delete
+        template(v-if="can('*') || can('*')" v-slot:item.actions="{ item }")
+          v-icon(v-if="can('*')" small @click="$router.push({name: 'cargos-id', params: { id: item.id}})").mr-2 mdi-pencil
+          v-icon(v-if="can('*')" small @click="confirmation(item)").mr-2 mdi-delete
 </template>
 <script>
 import { mapGetters } from 'vuex'
 export default {
   async fetch() {
-    const { sexes } = await this.$axios.$get('sexos')
-    this.sexes = sexes
+    const { data } = await this.$axios.$get('cargos')
+    this.items = data
   },
   data: () => ({
-    sexes: [],
+    items: [],
     headers: [
       { text: 'ID', value: 'id' },
-      { text: 'Sexo', value: 'sex' },
+      { text: 'Nombre', value: 'nombre' },
+      { text: 'Departamento', value: 'departamento.nombre' },
       {
         text: 'Acciones',
         align: 'right',
@@ -54,7 +55,7 @@ export default {
       },
     ],
     dialog: false,
-    item: { sex: '' },
+    item: { object: '' },
     message: '',
     snackbar: false,
     color: 'green',
@@ -65,8 +66,8 @@ export default {
   },
   methods: {
     async get() {
-      const { sexes } = await this.$axios.$get(`sexos`)
-      this.sexes = sexes
+      const { data } = await this.$axios.$get(`cargos`)
+      this.items = data
     },
     confirmation(item) {
       this.item = item
@@ -77,10 +78,14 @@ export default {
       this.dialog = false
     },
     async destroy(id) {
-      await this.$axios.$delete(`sexos/${id}`)
-      this.get()
-      this.resetDialog()
-      this.snack('El sexo ha sido eliminado.')
+      try {
+        await this.$axios.$delete(`cargos/${id}`)
+        this.get()
+        this.resetDialog()
+        this.snack('El cargo ha sido eliminado.')
+      } catch (error) {
+        this.snack('Ups! En este momento no puede realizar esta accion.', 'red')
+      }
     },
     snack(message, color = 'green') {
       this.color = color

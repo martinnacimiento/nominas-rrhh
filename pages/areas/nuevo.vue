@@ -1,23 +1,28 @@
 <template lang="pug">
   div
     v-snackbar(v-model="snackbar" :color="color") {{ message }}
-    v-card(:loading="$fetchState.pending" class="rounded-lg" :elevation="12")
-      v-card-title Editar objeto
+    v-card(class="rounded-lg" :elevation="12")
+      v-card-title Nuevo area
       v-card-text
         v-form(ref="form" v-model="valid" lazy-validation)
           v-row
             v-col(cols="12" md="6")
               v-text-field(
-                label="Id"
-                v-model="object.id"
-                disabled
+                label="Nombre"
+                v-model="item.nombre"
+                :rules="[rules.required, rules.counter]"
+                outlined
               )
             v-col(cols="12" md="6")
-              v-text-field(
-                label="Objeto"
-                v-model="object.object"
-                :rules="[rules.required, rules.counter]"
-                autofocus
+              v-select(
+                  label="Empresa"
+                  :items="companies"
+                  item-text="denominacion_social"
+                  item-value="id"
+                  v-model="item.empresa_id"
+                  :rules="[rules.required]"
+                  :loading="$fetchState.pending"
+                  outlined
               )
       v-card-actions
         v-spacer
@@ -26,14 +31,12 @@
 </template>
 <script>
 export default {
-  name: 'ObjetosId',
+  name: 'AreasNuevo',
   async fetch() {
-    const { id } = this.$route.params
-    const { object } = await this.$axios.$get(`objetos/${id}`)
-    this.object = object
+    const { data } = await this.$axios.$get('empresas')
+    this.companies = data
   },
   data: () => ({
-    object: {},
     valid: false,
     snackbar: false,
     color: 'green',
@@ -42,20 +45,18 @@ export default {
       required: (value) => !!value || 'Requerido.',
       counter: (value) => value?.length <= 50 || '50 caracteres máximo.',
     },
+    item: { nombre: '', empresa_id: '' },
     loading: false,
+    companies: [],
   }),
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
+        this.loading = true
         try {
-          this.loading = true
-          const { message } = await this.$axios.$put(
-            `objetos/${this.object.id}`,
-            {
-              object: this.object.object,
-            }
-          )
+          const { message } = await this.$axios.$post(`areas`, this.item)
           this.snack(message)
+          this.$refs.form.reset()
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }

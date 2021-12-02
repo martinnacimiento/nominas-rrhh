@@ -72,7 +72,7 @@ export default {
    ** See https://axios.nuxtjs.org/options
    */
   axios: {
-    baseURL: process.env.BASE_URL || 'http://186.153.168.116/api', // Used as fallback if no runtime config is provided
+    baseURL: process.env.BASE_URL || 'https://rhumanos21.myddns.me/api', // Used as fallback if no runtime config is provided
     proxy: false,
   },
   /*

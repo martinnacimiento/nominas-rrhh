@@ -8,7 +8,7 @@
     )
       v-card(class="rounded-lg")
         v-card-title
-        v-card-text Estas seguro que desea eliminar la persona {{item.id}}?
+        v-card-text Estas seguro que desea eliminar {{item.nombre}}?
         v-card-actions
           v-spacer
           v-btn(text @click="resetDialog") Cancelar
@@ -16,37 +16,46 @@
     v-card(class="rounded-lg" :elevation="12")
       v-data-table(
         :headers='headers'
-        :items='persons'
+        :items='items'
         :search="search"
         :loading="$fetchState.pending"
         sort-by='id'
       )
         template( v-slot:top)
           v-toolbar(flat)
-            v-toolbar-title Personas
+            v-toolbar-title Empleados
             v-divider(inset vertical).mx-4
             v-text-field(v-model="search" append-icon="mdi-table-search" label="Buscar" single-line hide-details)
             v-spacer
-            v-btn(v-if="can('create.person')" color="primary" small :to="{name: 'personas-nuevo'}")
+            v-btn(v-if="can('*')" color="primary" small :to="{name: 'empleados-nuevo'}")
               v-icon mdi-plus-circle-outline
-        template(v-if="can('edit.person') || can('destroy.person')" v-slot:item.actions="{ item }")
-          v-icon(v-if="can('edit.person')" small @click="$router.push({name: 'personas-id', params: { id: item.id}})").mr-2 mdi-pencil
-          v-icon(v-if="can('destroy.person')" small @click="confirmation(item)").mr-2 mdi-delete
+        template(v-if="can('*') || can('*')" v-slot:item.actions="{ item }")
+          v-icon(v-if="can('*')" small @click="$router.push({name: 'empleados-id', params: { id: item.id}})").mr-2 mdi-pencil
+          v-icon(v-if="can('*')" small @click="confirmation(item)").mr-2 mdi-delete
 </template>
 <script>
 import { mapGetters } from 'vuex'
 export default {
   async fetch() {
-    const { persons } = await this.$axios.$get('personas')
-    this.persons = persons
+    const { data } = await this.$axios.$get('empleados')
+    this.items = data
   },
   data: () => ({
-    persons: [],
+    items: [],
     headers: [
       { text: 'ID', value: 'id' },
-      { text: 'Apellido', value: 'surname' },
-      { text: 'Nombre', value: 'name' },
-      { text: 'Dni', value: 'dni' },
+      { text: 'Nombre', value: 'nombre' },
+      { text: 'Apellido', value: 'apellido' },
+      { text: 'Legajo', value: 'legajo' },
+      { text: 'DNI', value: 'dni' },
+      { text: 'Fecha de nacimiento', value: 'fecha_nacimiento' },
+      { text: 'Domicilio', value: 'domicilio' },
+      { text: 'Email', value: 'email' },
+      { text: 'Telefono', value: 'telefono' },
+      { text: 'Sexo', value: 'sexo' },
+      { text: 'Fecha de ingreso', value: 'fecha_ingreso' },
+      { text: 'Telefono de emergencia', value: 'telefono_emergencia' },
+      { text: 'Estado civil', value: 'estado_civil' },
       {
         text: 'Acciones',
         align: 'right',
@@ -56,7 +65,7 @@ export default {
       },
     ],
     dialog: false,
-    item: { person: '' },
+    item: { object: '' },
     message: '',
     snackbar: false,
     color: 'green',
@@ -67,8 +76,8 @@ export default {
   },
   methods: {
     async get() {
-      const { persons } = await this.$axios.$get(`personas`)
-      this.persons = persons
+      const { data } = await this.$axios.$get(`empleados`)
+      this.items = data
     },
     confirmation(item) {
       this.item = item
@@ -79,10 +88,14 @@ export default {
       this.dialog = false
     },
     async destroy(id) {
-      await this.$axios.$delete(`personas/${id}`)
-      this.get()
-      this.resetDialog()
-      this.snack('La persona ha sido eliminado.')
+      try {
+        await this.$axios.$delete(`empleados/${id}`)
+        this.get()
+        this.resetDialog()
+        this.snack('El empleado ha sido eliminado.')
+      } catch (error) {
+        this.snack('Ups! En este momento no puede realizar esta accion.', 'red')
+      }
     },
     snack(message, color = 'green') {
       this.color = color

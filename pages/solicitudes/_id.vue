@@ -2,7 +2,7 @@
 div
   v-snackbar(v-model='snackbar', :color='color') {{ message }}
   v-card.rounded-lg(:loading='$fetchState.pending', :elevation='12')
-    v-card-title Editar contrato
+    v-card-title Editar solicitud
     v-card-text
       v-form(ref='form', v-model='valid', lazy-validation)
         v-row
@@ -11,7 +11,7 @@ div
               ref='menu1',
               v-model='menu1',
               :close-on-content-click='false',
-              :return-value.sync='contract.fecha',
+              :return-value.sync='item.fecha',
               transition='scale-transition',
               offset-y,
               min-width='290px'
@@ -19,7 +19,7 @@ div
               template(v-slot:activator='{ on, attrs }')
                 v-text-field(
                   outlined,
-                  v-model='contract.fecha',
+                  v-model='item.fecha',
                   label='Desde',
                   prepend-icon='mdi-calendar',
                   readonly,
@@ -27,17 +27,17 @@ div
                   v-on='on',
                   :rules='[rules.required]'
                 )
-              v-date-picker(v-model='contract.fecha', scrollable)
+              v-date-picker(v-model='item.fecha', scrollable)
                 v-spacer
                 v-btn(text, color='primary', @click='menu1 = false') Cancel
                 v-btn(
                   text,
                   color='primary',
-                  @click='$refs.menu1.save(contract.fecha)'
+                  @click='$refs.menu1.save(item.fecha)'
                 ) OK
 
         v-col(cols='12', md='6')
-          v-text-field(label='Nombre', v-model='contract.nombre', outlined)
+          v-text-field(label='Nombre', v-model='item.nombre', outlined)
         v-col(cols='12', md='6')
           v-select(
             outlined,
@@ -45,29 +45,18 @@ div
             :items='employees',
             item-text='apellido',
             item-value='id',
-            v-model='contract.empleado.id',
+            v-model='item.empleado.id',
             :rules='[rules.required]',
             :loading='$fetchState.pending'
           )
         v-col(cols='12', md='6')
           v-select(
             outlined,
-            label='Tipo de contrato',
-            :items='contractTypes',
+            label='Tipo de solicitud',
+            :items='requestTypes',
             item-text='nombre',
             item-value='id',
-            v-model='contract.tipoContrato.id',
-            :rules='[rules.required]',
-            :loading='$fetchState.pending'
-          )
-        v-col(cols='12', md='6')
-          v-select(
-            outlined,
-            label='Cargo',
-            :items='positions',
-            item-text='nombre',
-            item-value='id',
-            v-model='contract.cargo.id',
+            v-model='item.tipoSolicitud.id',
             :rules='[rules.required]',
             :loading='$fetchState.pending'
           )
@@ -81,20 +70,20 @@ export default {
   name: 'ContratosId',
   async fetch() {
     const { id } = this.$route.params
-    const { data: contractData } = await this.$axios.$get(`contratos/${id}`)
-    const { data: positionsData } = await this.$axios.$get(`cargos`)
+    const { data: requestData } = await this.$axios.$get(`solicitudes/${id}`)
     const { data: employeesData } = await this.$axios.$get(`empleados`)
-    const { data: contractTypeData } = await this.$axios.$get(`tiposContrato`)
-    this.positions = positionsData
+    const { data: requestTypesData } = await this.$axios.$get(`tiposSolicitud`)
     this.employees = employeesData
-    this.contractTypes = contractTypeData
-    this.contract = contractData
+    this.requestTypes = requestTypesData
+    this.item = requestData
   },
   data: () => ({
-    contract: {},
-    positions: [],
+    item: {
+      empleado: {},
+      tipoSolicitud: {},
+    },
     employees: [],
-    contractTypes: [],
+    requestTypes: [],
     valid: false,
     snackbar: false,
     color: 'green',
@@ -111,11 +100,10 @@ export default {
       if (this.$refs.form.validate()) {
         try {
           this.loading = true
-          await this.$axios.$put(`contratos/${this.contract.id}`, {
-            ...this.contract,
-            empleado_id: this.contract.empleado.id,
-            tipo_contrato_id: this.contract.tipoContrato.id,
-            cargo_id: this.contract.cargo.id,
+          await this.$axios.$put(`solicitudes/${this.item.id}`, {
+            ...this.item,
+            empleado_id: this.item.empleado.id,
+            tipo_solicitud_id: this.item.tipoSolicitud.id,
           })
           this.snack('Se ha editado con exito.')
         } catch (error) {

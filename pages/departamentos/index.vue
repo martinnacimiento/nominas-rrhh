@@ -8,7 +8,7 @@
     )
       v-card(class="rounded-lg")
         v-card-title
-        v-card-text Estas seguro que desea eliminar el objeto {{item.object}}?
+        v-card-text Estas seguro que desea eliminar {{item.nombre}}?
         v-card-actions
           v-spacer
           v-btn(text @click="resetDialog") Cancelar
@@ -16,35 +16,36 @@
     v-card(class="rounded-lg" :elevation="12")
       v-data-table(
         :headers='headers'
-        :items='objects'
+        :items='items'
         :search="search"
         :loading="$fetchState.pending"
         sort-by='id'
       )
         template( v-slot:top)
           v-toolbar(flat)
-            v-toolbar-title Objetos
+            v-toolbar-title Departamentos
             v-divider(inset vertical).mx-4
             v-text-field(v-model="search" append-icon="mdi-table-search" label="Buscar" single-line hide-details)
             v-spacer
-            v-btn(v-if="can('create.object')" color="primary" small :to="{name: 'objetos-nuevo'}")
+            v-btn(v-if="can('*')" color="primary" small :to="{name: 'departamentos-nuevo'}")
               v-icon mdi-plus-circle-outline
-        template(v-if="can('edit.object') || can('destroy.object')" v-slot:item.actions="{ item }")
-          v-icon(v-if="can('edit.object')" small @click="$router.push({name: 'objetos-id', params: { id: item.id}})").mr-2 mdi-pencil
-          v-icon(v-if="can('destroy.object')" small @click="confirmation(item)").mr-2 mdi-delete
+        template(v-if="can('*') || can('*')" v-slot:item.actions="{ item }")
+          v-icon(v-if="can('*')" small @click="$router.push({name: 'departamentos-id', params: { id: item.id}})").mr-2 mdi-pencil
+          v-icon(v-if="can('*')" small @click="confirmation(item)").mr-2 mdi-delete
 </template>
 <script>
 import { mapGetters } from 'vuex'
 export default {
   async fetch() {
-    const { objects } = await this.$axios.$get('objetos')
-    this.objects = objects
+    const { data } = await this.$axios.$get('departamentos')
+    this.items = data
   },
   data: () => ({
-    objects: [],
+    items: [],
     headers: [
       { text: 'ID', value: 'id' },
-      { text: 'Objeto', value: 'object' },
+      { text: 'Nombre', value: 'nombre' },
+      { text: 'Area', value: 'area.nombre' },
       {
         text: 'Acciones',
         align: 'right',
@@ -65,8 +66,8 @@ export default {
   },
   methods: {
     async get() {
-      const { objects } = await this.$axios.$get(`objetos`)
-      this.objects = objects
+      const { data } = await this.$axios.$get(`departamentos`)
+      this.items = data
     },
     confirmation(item) {
       this.item = item
@@ -77,10 +78,14 @@ export default {
       this.dialog = false
     },
     async destroy(id) {
-      await this.$axios.$delete(`objetos/${id}`)
-      this.get()
-      this.resetDialog()
-      this.snack('El objeto ha sido eliminado.')
+      try {
+        await this.$axios.$delete(`departamentos/${id}`)
+        this.get()
+        this.resetDialog()
+        this.snack('El departamento ha sido eliminado.')
+      } catch (error) {
+        this.snack('Ups! En este momento no puede realizar esta accion.', 'red')
+      }
     },
     snack(message, color = 'green') {
       this.color = color

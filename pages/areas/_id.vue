@@ -1,37 +1,28 @@
 <template lang="pug">
 div
   v-snackbar(v-model='snackbar', :color='color') {{ message }}
-  v-card.rounded-lg(:elevation='12')
-    v-card-title Nueva empresa
+  v-card.rounded-lg(:loading='$fetchState.pending', :elevation='12')
+    v-card-title Editar area
     v-card-text
       v-form(ref='form', v-model='valid', lazy-validation)
         v-row
           v-col(cols='12', md='6')
             v-text-field(
-              label='Denominacion social',
-              v-model='company.denominacion_social',
+              label='Nombre',
+              v-model='item.nombre',
               :rules='[rules.required, rules.counter]',
+              autofocus,
               outlined
             )
           v-col(cols='12', md='6')
-            v-text-field(
-              label='Clasificacion',
-              v-model='company.clasificacion',
-              :rules='[rules.required, rules.counter]',
-              outlined
-            )
-          v-col(cols='12', md='6')
-            v-text-field(
-              label='Domicilio',
-              v-model='company.domicilio',
-              :rules='[rules.required, rules.counter]',
-              outlined
-            )
-          v-col(cols='12', md='6')
-            v-text-field(
-              label='Telefono',
-              v-model='company.telefono',
-              :rules='[rules.required, rules.counter]',
+            v-select(
+              label='Empresa',
+              :items='companies',
+              item-text='denominacion_social',
+              item-value='id',
+              v-model='item.empresa.id',
+              :rules='[rules.required]',
+              :loading='$fetchState.pending',
               outlined
             )
     v-card-actions
@@ -41,32 +32,37 @@ div
 </template>
 <script>
 export default {
-  name: 'EstadosNuevo',
+  name: 'CargosId',
+  async fetch() {
+    const { id } = this.$route.params
+    const { data } = await this.$axios.$get(`areas/${id}`)
+    const { data: companiesData } = await this.$axios.$get('empresas')
+    this.item = data
+    this.companies = companiesData
+  },
   data: () => ({
+    item: { empresa: '' },
     valid: false,
     snackbar: false,
     color: 'green',
     message: '',
     rules: {
       required: (value) => !!value || 'Requerido.',
-      counter: (value) => value?.length <= 20 || '20 caracteres máximo.',
-    },
-    company: {
-      denominacion_social: '',
-      clasificacion: '',
-      domicilio: '',
-      telefono: '',
+      counter: (value) => value?.length <= 50 || '50 caracteres máximo.',
     },
     loading: false,
+    companies: [],
   }),
   methods: {
     async save() {
       if (this.$refs.form.validate()) {
         try {
           this.loading = true
-          await this.$axios.$post(`empresas`, this.company)
-          this.snack('Empresa creada con exito!')
-          this.$refs.form.reset()
+          const { message } = await this.$axios.$put(`areas/${this.item.id}`, {
+            nombre: this.item.nombre,
+            empresa_id: this.item.empresa.id,
+          })
+          this.snack(message)
         } catch (error) {
           this.snack(error.response.data.message, 'error')
         }
